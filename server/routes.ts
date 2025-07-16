@@ -188,79 +188,298 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 function generatePlanSteps(assessment: any, template: any) {
   const steps = [];
-  
-  // Repository setup steps
-  if (assessment.branchProtection === "None implemented") {
-    steps.push({
-      id: 1,
-      title: "Enable Branch Protection Rules",
-      description: "Configure branch protection for main branches",
-      category: "security",
+  let stepId = 1;
+
+  // Phase 1: Repository Configuration & Security
+  const repositorySteps = [
+    {
+      id: stepId++,
+      title: "Audit Current Repository Settings",
+      description: "Review existing repository configuration, access permissions, and security settings",
+      category: "assessment",
       completed: false,
       estimatedTime: "30 minutes",
-      priority: "high"
-    });
-  }
+      priority: "high",
+      phase: "Configuration Setup",
+      instructions: [
+        "Review repository visibility settings (public/private)",
+        "Audit team member access levels and permissions",
+        "Check current branch protection rules",
+        "Document existing integrations and webhooks"
+      ]
+    }
+  ];
 
-  // Workflow-specific steps
-  if (template.type === "gitflow") {
-    steps.push({
-      id: 2,
-      title: "Create Development Branch",
-      description: "Set up dedicated development branch for integration",
-      category: "workflow",
-      completed: false,
-      estimatedTime: "15 minutes",
-      priority: "high"
-    });
-
-    steps.push({
-      id: 3,
-      title: "Configure Branch Naming Convention",
-      description: "Establish naming patterns for feature, release, and hotfix branches",
-      category: "workflow",
-      completed: false,
-      estimatedTime: "20 minutes",
-      priority: "medium"
-    });
-  }
-
-  // Code review steps
-  if (!assessment.codeReviewProcess?.requiredReviews) {
-    steps.push({
-      id: 4,
-      title: "Implement Code Review Process",
-      description: "Set up required pull request reviews and approval workflows",
-      category: "collaboration",
+  if (assessment.branchProtection === "none" || !assessment.repositorySettings?.branchProtection) {
+    repositorySteps.push({
+      id: stepId++,
+      title: "Enable Branch Protection Rules",
+      description: "Configure comprehensive branch protection for main and development branches",
+      category: "security",
       completed: false,
       estimatedTime: "45 minutes",
-      priority: "high"
+      priority: "high",
+      phase: "Configuration Setup",
+      instructions: [
+        "Enable 'Require pull request reviews before merging'",
+        "Set minimum number of required reviewers (2 for teams >5, 1 for smaller teams)",
+        "Enable 'Dismiss stale PR approvals when new commits are pushed'",
+        "Require status checks to pass before merging",
+        "Enable 'Require branches to be up to date before merging'",
+        "Restrict pushes to matching branches (admins only)"
+      ]
     });
   }
 
-  // CI/CD steps
+  repositorySteps.push({
+    id: stepId++,
+    title: "Configure Repository Security Settings",
+    description: "Enable security features and vulnerability scanning",
+    category: "security",
+    completed: false,
+    estimatedTime: "30 minutes",
+    priority: "high",
+    phase: "Configuration Setup",
+    instructions: [
+      "Enable Dependabot alerts for vulnerable dependencies",
+      "Set up automated dependency updates",
+      "Enable secret scanning for API keys and tokens",
+      "Configure code scanning with CodeQL",
+      "Set up security policies and vulnerability reporting"
+    ]
+  });
+
+  // Phase 2: Workflow Implementation
+  const workflowSteps = [];
+  
+  if (template.type === "gitflow") {
+    workflowSteps.push({
+      id: stepId++,
+      title: "Set Up GitFlow Branch Structure",
+      description: "Create and configure GitFlow branching model with proper naming conventions",
+      category: "workflow",
+      completed: false,
+      estimatedTime: "1 hour",
+      priority: "high",
+      phase: "Workflow Setup",
+      instructions: [
+        "Create 'develop' branch from main",
+        "Set up branch naming conventions: feature/*, release/*, hotfix/*",
+        "Configure branch protection for develop branch",
+        "Document GitFlow process for the team",
+        "Set up branch deletion policies for merged branches"
+      ]
+    });
+
+    workflowSteps.push({
+      id: stepId++,
+      title: "Configure GitFlow Release Process",
+      description: "Establish release branch workflows and versioning strategy",
+      category: "workflow",
+      completed: false,
+      estimatedTime: "45 minutes",
+      priority: "medium",
+      phase: "Workflow Setup",
+      instructions: [
+        "Define semantic versioning strategy (major.minor.patch)",
+        "Create release branch template with checklist",
+        "Set up automated changelog generation",
+        "Configure release notes template",
+        "Establish hotfix procedures for production issues"
+      ]
+    });
+  } else if (template.type === "trunk") {
+    workflowSteps.push({
+      id: stepId++,
+      title: "Configure Trunk-Based Development",
+      description: "Set up trunk-based workflow with feature flags and continuous integration",
+      category: "workflow",
+      completed: false,
+      estimatedTime: "1 hour",
+      priority: "high",
+      phase: "Workflow Setup",
+      instructions: [
+        "Configure main branch as single source of truth",
+        "Set up short-lived feature branches (max 2 days)",
+        "Implement feature flag system for incomplete features",
+        "Configure fast-forward merge strategy",
+        "Set up continuous integration for all commits"
+      ]
+    });
+  }
+
+  // Phase 3: Code Review & Collaboration
+  const collaborationSteps = [];
+  
+  if (!assessment.codeReviewProcess?.requiredReviews) {
+    collaborationSteps.push({
+      id: stepId++,
+      title: "Implement Code Review Process",
+      description: "Establish comprehensive pull request review workflows and guidelines",
+      category: "collaboration",
+      completed: false,
+      estimatedTime: "1 hour",
+      priority: "high",
+      phase: "Code Review Setup",
+      instructions: [
+        "Create pull request template with checklist",
+        "Define code review criteria and standards",
+        "Set up CODEOWNERS file for automatic reviewer assignment",
+        "Configure required approvals based on file changes",
+        "Establish review turnaround time expectations",
+        "Create guidelines for constructive feedback"
+      ]
+    });
+  }
+
+  collaborationSteps.push({
+    id: stepId++,
+    title: "Standardize Commit Message Format",
+    description: "Implement consistent commit message conventions for better project history",
+    category: "collaboration",
+    completed: false,
+    estimatedTime: "30 minutes",
+    priority: "medium",
+    phase: "Code Review Setup",
+    instructions: [
+      "Adopt Conventional Commits format (feat:, fix:, docs:, etc.)",
+      "Set up commit message template",
+      "Configure commit linting with commitlint",
+      "Create examples of good commit messages",
+      "Set up pre-commit hooks for message validation"
+    ]
+  });
+
+  // Phase 4: Automation & CI/CD
+  const automationSteps = [];
+  
   if (!assessment.codeReviewProcess?.automatedChecks) {
-    steps.push({
-      id: 5,
-      title: "Set up Automated Testing",
-      description: "Configure continuous integration with automated test runs",
+    automationSteps.push({
+      id: stepId++,
+      title: "Set Up Continuous Integration Pipeline",
+      description: "Configure automated testing and build processes",
       category: "automation",
       completed: false,
       estimatedTime: "2 hours",
-      priority: "medium"
+      priority: "high",
+      phase: "Automation Setup",
+      instructions: [
+        "Create GitHub Actions workflow for testing",
+        "Set up automated code linting and formatting",
+        "Configure test coverage reporting",
+        "Add build and deployment automation",
+        "Set up status checks for pull requests",
+        "Configure notification systems for failures"
+      ]
     });
   }
 
-  // Team training
-  steps.push({
-    id: 6,
-    title: "Conduct Team Training",
-    description: "Train team members on new workflow and best practices",
-    category: "training",
+  automationSteps.push({
+    id: stepId++,
+    title: "Configure Quality Gates",
+    description: "Implement automated code quality checks and gates",
+    category: "automation",
     completed: false,
-    estimatedTime: "3 hours",
-    priority: "medium"
+    estimatedTime: "1 hour",
+    priority: "medium",
+    phase: "Automation Setup",
+    instructions: [
+      "Set up SonarCloud or similar code quality tool",
+      "Configure minimum code coverage thresholds",
+      "Add automated security scanning",
+      "Set up performance regression testing",
+      "Configure dependency vulnerability checks",
+      "Implement automated code formatting"
+    ]
   });
+
+  // Phase 5: Documentation & Training
+  const documentationSteps = [
+    {
+      id: stepId++,
+      title: "Create Comprehensive Documentation",
+      description: "Document all processes, workflows, and best practices",
+      category: "documentation",
+      completed: false,
+      estimatedTime: "2 hours",
+      priority: "medium",
+      phase: "Documentation & Training",
+      instructions: [
+        "Create README with project overview and setup instructions",
+        "Document branching strategy and workflow procedures",
+        "Write contributing guidelines for new team members",
+        "Create troubleshooting guide for common issues",
+        "Document release and deployment procedures",
+        "Set up wiki or knowledge base for ongoing documentation"
+      ]
+    },
+    {
+      id: stepId++,
+      title: "Conduct Team Training Sessions",
+      description: "Train team members on new workflows and best practices",
+      category: "training",
+      completed: false,
+      estimatedTime: "4 hours",
+      priority: "high",
+      phase: "Documentation & Training",
+      instructions: [
+        "Conduct Git workflow training session",
+        "Demonstrate pull request and code review process",
+        "Train on CI/CD pipeline usage and troubleshooting",
+        "Show how to use new tools and integrations",
+        "Provide hands-on practice with new workflows",
+        "Create reference materials and cheat sheets"
+      ]
+    }
+  ];
+
+  // Phase 6: Monitoring & Optimization
+  const monitoringSteps = [
+    {
+      id: stepId++,
+      title: "Set Up Project Monitoring",
+      description: "Implement metrics and monitoring for development workflow",
+      category: "monitoring",
+      completed: false,
+      estimatedTime: "1 hour",
+      priority: "medium",
+      phase: "Monitoring & Optimization",
+      instructions: [
+        "Set up GitHub Insights for team productivity metrics",
+        "Configure notifications for important events",
+        "Track pull request cycle time and review time",
+        "Monitor code quality trends over time",
+        "Set up alerts for security vulnerabilities",
+        "Create dashboard for project health metrics"
+      ]
+    },
+    {
+      id: stepId++,
+      title: "Establish Review and Improvement Process",
+      description: "Create ongoing process for workflow optimization",
+      category: "optimization",
+      completed: false,
+      estimatedTime: "30 minutes",
+      priority: "low",
+      phase: "Monitoring & Optimization",
+      instructions: [
+        "Schedule monthly workflow review meetings",
+        "Create feedback mechanism for team members",
+        "Establish metrics for measuring improvement",
+        "Document lessons learned and best practices",
+        "Plan for regular tool and process updates",
+        "Create process for onboarding new team members"
+      ]
+    }
+  ];
+
+  // Combine all steps based on assessment and template
+  steps.push(...repositorySteps);
+  steps.push(...workflowSteps);
+  steps.push(...collaborationSteps);
+  steps.push(...automationSteps);
+  steps.push(...documentationSteps);
+  steps.push(...monitoringSteps);
 
   return steps;
 }

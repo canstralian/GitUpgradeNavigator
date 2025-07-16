@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { MoreVertical, Check, FileText, Download } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { Link } from "wouter";
 import type { UpgradePlan } from "@shared/schema";
 
 interface PlanCardProps {
@@ -100,10 +101,12 @@ export default function PlanCard({ plan }: PlanCardProps) {
           </span>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="sm" className="text-github-blue hover:bg-github-blue hover:text-white">
-            <FileText className="h-4 w-4 mr-1" />
-            Details
-          </Button>
+          <Link href={`/plans/${plan.id}`}>
+            <Button variant="ghost" size="sm" className="text-github-blue hover:bg-github-blue hover:text-white">
+              <FileText className="h-4 w-4 mr-1" />
+              Details
+            </Button>
+          </Link>
           {plan.status === 'completed' && (
             <Button variant="ghost" size="sm" className="text-github-blue hover:bg-github-blue hover:text-white">
               <Download className="h-4 w-4 mr-1" />

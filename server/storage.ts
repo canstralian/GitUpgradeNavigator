@@ -229,7 +229,8 @@ export class MemStorage implements IStorage {
     const newAssessment: Assessment = {
       ...assessment,
       id: this.assessmentIdCounter++,
-      createdAt: new Date()
+      createdAt: new Date(),
+      currentChallenges: assessment.currentChallenges || null
     };
     this.assessments.set(newAssessment.id, newAssessment);
     return newAssessment;
@@ -249,7 +250,13 @@ export class MemStorage implements IStorage {
       ...plan,
       id: this.planIdCounter++,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      progress: plan.progress || 0,
+      status: plan.status || "pending",
+      priority: plan.priority || "medium",
+      description: plan.description || null,
+      assessmentId: plan.assessmentId || null,
+      estimatedDuration: plan.estimatedDuration || null
     };
     this.upgradePlans.set(newPlan.id, newPlan);
     return newPlan;
@@ -284,7 +291,10 @@ export class MemStorage implements IStorage {
     const newResource: Resource = {
       ...resource,
       id: this.resourceIdCounter++,
-      createdAt: new Date()
+      createdAt: new Date(),
+      url: resource.url || null,
+      rating: resource.rating || 5,
+      downloadCount: resource.downloadCount || 0
     };
     this.resources.set(newResource.id, newResource);
     return newResource;
@@ -310,7 +320,8 @@ export class MemStorage implements IStorage {
   async createWorkflowTemplate(template: InsertWorkflowTemplate): Promise<WorkflowTemplate> {
     const newTemplate: WorkflowTemplate = {
       ...template,
-      id: this.templateIdCounter++
+      id: this.templateIdCounter++,
+      recommended: template.recommended || false
     };
     this.workflowTemplates.set(newTemplate.id, newTemplate);
     return newTemplate;

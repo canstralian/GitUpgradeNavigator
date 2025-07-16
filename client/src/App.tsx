@@ -9,6 +9,7 @@ import Home from "@/pages/home";
 import Assessment from "@/pages/assessment";
 import WorkflowDesigner from "@/pages/workflow-designer";
 import Plans from "@/pages/plans";
+import PlanDetail from "@/pages/plan-detail";
 import Resources from "@/pages/resources";
 import NotFound from "@/pages/not-found";
 
@@ -21,6 +22,9 @@ function Router() {
         <Route path="/assessment" component={Assessment} />
         <Route path="/workflow-designer" component={WorkflowDesigner} />
         <Route path="/plans" component={Plans} />
+        <Route path="/plans/:planId">
+          {(params) => <PlanDetail planId={params.planId} />}
+        </Route>
         <Route path="/resources" component={Resources} />
         <Route component={NotFound} />
       </Switch>
