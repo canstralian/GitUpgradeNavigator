@@ -37,64 +37,40 @@ export default function ResourceCard({ resource }: ResourceCardProps) {
     }
   };
 
-  const getActionButton = () => {
-    switch (resource.type) {
-      case 'tutorial':
-        return (
-          <Button variant="ghost" size="sm" className="text-github-blue hover:bg-github-blue hover:text-white">
-            <ExternalLink className="h-4 w-4 mr-1" />
-            Read Guide
-          </Button>
-        );
-      case 'tool':
-        return (
-          <Button variant="ghost" size="sm" className="text-github-blue hover:bg-github-blue hover:text-white">
-            <Download className="h-4 w-4 mr-1" />
-            Download
-          </Button>
-        );
-      case 'training':
-        return (
-          <Button variant="ghost" size="sm" className="text-github-blue hover:bg-github-blue hover:text-white">
-            <Download className="h-4 w-4 mr-1" />
-            Download
-          </Button>
-        );
-      default:
-        return (
-          <Button variant="ghost" size="sm" className="text-github-blue hover:bg-github-blue hover:text-white">
-            <ExternalLink className="h-4 w-4 mr-1" />
-            View Guide
-          </Button>
-        );
+  const resourceConfig = {
+    tutorial: {
+      actionIcon: ExternalLink,
+      actionText: "Read Guide",
+      metricIcon: Star,
+      metricIconClass: "h-4 w-4 text-yellow-400",
+      metricText: `${resource.rating}/5 (${resource.downloadCount} reviews)`
+    },
+    tool: {
+      actionIcon: Download,
+      actionText: "Download",
+      metricIcon: Download,
+      metricIconClass: "h-4 w-4 text-github-muted",
+      metricText: `${resource.downloadCount} downloads`
+    },
+    training: {
+      actionIcon: Download,
+      actionText: "Download",
+      metricIcon: Clock,
+      metricIconClass: "h-4 w-4 text-github-muted",
+      metricText: `${resource.downloadCount} downloads`
+    },
+    default: {
+      actionIcon: ExternalLink,
+      actionText: "View Guide",
+      metricIcon: Clock,
+      metricIconClass: "h-4 w-4 text-github-muted",
+      metricText: `${resource.downloadCount} views`
     }
   };
 
-  const getMetricIcon = () => {
-    switch (resource.type) {
-      case 'tutorial':
-        return <Star className="h-4 w-4 text-yellow-400" />;
-      case 'tool':
-        return <Download className="h-4 w-4 text-github-muted" />;
-      case 'training':
-        return <Clock className="h-4 w-4 text-github-muted" />;
-      default:
-        return <Clock className="h-4 w-4 text-github-muted" />;
-    }
-  };
-
-  const getMetricText = () => {
-    switch (resource.type) {
-      case 'tutorial':
-        return `${resource.rating}/5 (${resource.downloadCount} reviews)`;
-      case 'tool':
-        return `${resource.downloadCount} downloads`;
-      case 'training':
-        return `${resource.downloadCount} downloads`;
-      default:
-        return `${resource.downloadCount} views`;
-    }
-  };
+  const config = resourceConfig[resource.type] || resourceConfig.default;
+  const ActionIcon = config.actionIcon;
+  const MetricIcon = config.metricIcon;
 
   return (
     <Card className="p-6 border border-gray-200 hover:shadow-md transition-shadow">
@@ -117,10 +93,13 @@ export default function ResourceCard({ resource }: ResourceCardProps) {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          {getMetricIcon()}
-          <span className="text-sm text-github-muted">{getMetricText()}</span>
+          <MetricIcon className={config.metricIconClass} />
+          <span className="text-sm text-github-muted">{config.metricText}</span>
         </div>
-        {getActionButton()}
+        <Button variant="ghost" size="sm" className="text-github-blue hover:bg-github-blue hover:text-white">
+          <ActionIcon className="h-4 w-4 mr-1" />
+          {config.actionText}
+        </Button>
       </div>
     </Card>
   );

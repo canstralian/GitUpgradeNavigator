@@ -210,7 +210,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 function generatePlanSteps(assessment: any, template: any) {
   const steps = [];
-  let stepId = 1;
+  const generateStepId = () => Math.random().toString(36).substr(2, 9);
 
   // Phase 1: Repository Configuration & Security
   const repositorySteps = [
@@ -377,7 +377,7 @@ function generatePlanSteps(assessment: any, template: any) {
 
   if (!assessment.codeReviewProcess?.automatedChecks) {
     automationSteps.push({
-      id: stepId++,
+      id: generateStepId(),
       title: "Set Up Continuous Integration Pipeline",
       description: "Configure automated testing and build processes",
       category: "automation",
@@ -397,7 +397,7 @@ function generatePlanSteps(assessment: any, template: any) {
   }
 
   automationSteps.push({
-    id: stepId++,
+    id: generateStepId(),
     title: "Configure Quality Gates",
     description: "Implement automated code quality checks and gates",
     category: "automation",

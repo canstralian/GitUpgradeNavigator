@@ -11,7 +11,7 @@ export default function Resources() {
   const [skillLevelFilter, setSkillLevelFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
 
-  const { data: resources, isLoading } = useQuery<Resource[]>({
+  const { data: resources, isLoading, error } = useQuery<Resource[]>({
     queryKey: ["/api/resources", { category: categoryFilter, skillLevel: skillLevelFilter }],
   });
 
@@ -20,7 +20,7 @@ export default function Resources() {
 
     return resources.filter(resource => {
       const matchesCategory = categoryFilter === "all" || resource.category === categoryFilter;
-      const matchesSkillLevel = skillLevelFilter === "all" || resource.skillLevel === skillLevelFilter;
+      const matchesSkillLevel = skillLevelFilter === "all" || resource.skillLevel === skillLevelLevel;
       return matchesCategory && matchesSkillLevel;
     });
   }, [resources, categoryFilter, skillLevelFilter]);
@@ -29,6 +29,16 @@ export default function Resources() {
     return (
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">Loading resources...</div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center text-red-600">
+          Error loading resources. Please try again later.
+        </div>
       </main>
     );
   }
@@ -76,11 +86,26 @@ export default function Resources() {
             </div>
           </CardHeader>
           <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredResources?.map((resource) => (
-                <ResourceCard key={resource.id} resource={resource} />
-              ))}
-            </div>
+            {filteredResources?.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-github-muted mb-4">No resources found matching your filters.</p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setSkillLevelFilter("all");
+                    setCategoryFilter("all");
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredResources?.map((resource) => (
+                  <ResourceCard key={resource.id} resource={resource} />
+                ))}
+              </div>
+            )}
 
             <div className="mt-8 text-center">
               <Button variant="outline" className="border-github-muted text-github-dark hover:bg-gray-50">
