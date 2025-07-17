@@ -1,9 +1,11 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Download, Github } from "lucide-react";
+import { Download, Github, Moon, Sun } from "lucide-react";
+import { useTheme } from "@/contexts/theme-context";
 
 export default function Header() {
   const [location] = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   const navLinks = [
     { href: "/assessment", label: "Assessment" },
@@ -42,6 +44,18 @@ export default function Header() {
           </nav>
           
           <div className="flex items-center space-x-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleTheme}
+              className="border-github-muted hover:bg-github-muted/10"
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
+            </Button>
             <Button className="bg-github-blue hover:bg-blue-700 text-white">
               <Download className="mr-2 h-4 w-4" />
               Export Plan
