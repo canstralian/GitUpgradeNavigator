@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { z } from "zod";
 import { storage } from "./storage";
@@ -86,7 +86,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/resources", async (req, res) => {
     try {
       const { category, skillLevel } = req.query;
-      
+
       let resources;
       if (category && typeof category === 'string') {
         resources = await storage.getResourcesByCategory(category);
@@ -95,7 +95,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         resources = await storage.getAllResources();
       }
-      
+
       res.json(resources);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch resources" });
@@ -119,14 +119,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/workflow-templates", async (req, res) => {
     try {
       const { type } = req.query;
-      
+
       let templates;
       if (type && typeof type === 'string') {
         templates = await storage.getWorkflowTemplatesByType(type);
       } else {
         templates = await storage.getAllWorkflowTemplates();
       }
-      
+
       res.json(templates);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch workflow templates" });
@@ -150,7 +150,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/generate-plan", async (req, res) => {
     try {
       const { assessmentId, workflowType } = req.body;
-      
+
       const assessment = await storage.getAssessment(assessmentId);
       if (!assessment) {
         return res.status(404).json({ error: "Assessment not found" });
@@ -163,7 +163,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Generate steps based on assessment and template
       const steps = generatePlanSteps(assessment, template[0]);
-      
+
       const plan = await storage.createUpgradePlan({
         title: `${template[0].name} Implementation Plan`,
         description: `Upgrade plan for implementing ${template[0].name} workflow`,
@@ -183,6 +183,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
+
+  app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+
+    // Log error details for debugging
+    console.error(`[${new Date().toISOString()}] ${req.method} ${req.path} - ${status}: ${message}`);
+    if (status === 500) {
+      console.error(err.stack);
+    }
+
+    // Don't expose internal errors in production
+    const responseMessage = status === 500 && process.env.NODE_ENV === 'production' 
+      ? "Internal Server Error" 
+      : message;
+
+    res.status(status).json({ 
+      error: responseMessage,
+      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    });
+  });
+
   return httpServer;
 }
 
@@ -251,7 +273,7 @@ function generatePlanSteps(assessment: any, template: any) {
 
   // Phase 2: Workflow Implementation
   const workflowSteps = [];
-  
+
   if (template.type === "gitflow") {
     workflowSteps.push({
       id: stepId++,
@@ -310,7 +332,7 @@ function generatePlanSteps(assessment: any, template: any) {
 
   // Phase 3: Code Review & Collaboration
   const collaborationSteps = [];
-  
+
   if (!assessment.codeReviewProcess?.requiredReviews) {
     collaborationSteps.push({
       id: stepId++,
@@ -352,7 +374,7 @@ function generatePlanSteps(assessment: any, template: any) {
 
   // Phase 4: Automation & CI/CD
   const automationSteps = [];
-  
+
   if (!assessment.codeReviewProcess?.automatedChecks) {
     automationSteps.push({
       id: stepId++,
