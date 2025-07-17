@@ -1,47 +1,85 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { securityHeaders, corsConfig } from "./middleware/security";
+import { errorHandler, notFoundHandler } from "./middleware/error-handler";
+import { logger } from "./utils/logger";
+import { checkDatabaseHealth, closeDatabaseConnection } from "./db";
 
 const app = express();
 
-// Security and validation middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+// Trust proxy for accurate IP addresses
+app.set('trust proxy', 1);
 
-// Basic security headers
-app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  next();
-});
+// Security middleware
+app.use(securityHeaders);
+app.use(corsConfig);
 
-// Basic rate limiting
-const requestCounts = new Map();
-app.use((req, res, next) => {
-  const ip = req.ip;
-  const now = Date.now();
-  const windowMs = 15 * 60 * 1000; // 15 minutes
-  const maxRequests = 1000; // requests per window
-
-  if (!requestCounts.has(ip)) {
-    requestCounts.set(ip, { count: 1, resetTime: now + windowMs });
-  } else {
-    const record = requestCounts.get(ip);
-    if (now > record.resetTime) {
-      record.count = 1;
-      record.resetTime = now + windowMs;
-    } else {
-      record.count++;
-      if (record.count > maxRequests) {
-        return res.status(429).json({ error: 'Too many requests' });
-      }
+// Body parsing with limits
+app.use(express.json({ 
+  limit: '10mb',
+  verify: (req, res, buf) => {
+    try {
+      JSON.parse(buf.toString());
+    } catch (e) {
+      throw new Error('Invalid JSON');
     }
   }
-  
-  next();
-});
+}));
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+
+// Enhanced rate limiting with Redis-like memory store
+class RateLimiter {
+  private requests: Map<string, { count: number; resetTime: number; blocked: boolean }> = new Map();
+  private readonly windowMs = 15 * 60 * 1000; // 15 minutes
+  private readonly maxRequests = process.env.NODE_ENV === 'production' ? 100 : 1000;
+  private readonly blockDuration = 60 * 1000; // 1 minute block
+
+  middleware = (req: Request, res: Response, next: NextFunction) => {
+    const ip = req.ip || req.connection.remoteAddress || 'unknown';
+    const now = Date.now();
+    
+    let record = this.requests.get(ip);
+    
+    if (!record) {
+      record = { count: 1, resetTime: now + this.windowMs, blocked: false };
+      this.requests.set(ip, record);
+    } else if (now > record.resetTime) {
+      record.count = 1;
+      record.resetTime = now + this.windowMs;
+      record.blocked = false;
+    } else {
+      record.count++;
+      
+      if (record.count > this.maxRequests && !record.blocked) {
+        record.blocked = true;
+        record.resetTime = now + this.blockDuration;
+        logger.warn('Rate limit exceeded', { ip, count: record.count });
+      }
+    }
+    
+    if (record.blocked && now < record.resetTime) {
+      return res.status(429).json({ 
+        error: 'Too many requests',
+        retryAfter: Math.ceil((record.resetTime - now) / 1000)
+      });
+    }
+    
+    // Cleanup old entries periodically
+    if (Math.random() < 0.01) {
+      for (const [key, value] of this.requests.entries()) {
+        if (now > value.resetTime + this.windowMs) {
+          this.requests.delete(key);
+        }
+      }
+    }
+    
+    next();
+  };
+}
+
+const rateLimiter = new RateLimiter();
+app.use(rateLimiter.middleware);
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -74,15 +112,27 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Health check endpoint
+  app.get('/health', async (req, res) => {
+    const dbHealthy = await checkDatabaseHealth();
+    const status = dbHealthy ? 200 : 503;
+    
+    res.status(status).json({
+      status: dbHealthy ? 'healthy' : 'unhealthy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      database: dbHealthy ? 'connected' : 'disconnected',
+      environment: process.env.NODE_ENV
+    });
+  });
+
   const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+  // 404 handler
+  app.use(notFoundHandler);
 
-    res.status(status).json({ message });
-    throw err;
-  });
+  // Global error handler
+  app.use(errorHandler);
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
@@ -105,20 +155,40 @@ app.use((req, res, next) => {
   });
 
   // Graceful shutdown
-  const gracefulShutdown = (signal: string) => {
-    log(`Received ${signal}. Starting graceful shutdown...`);
-    server.close(() => {
-      log('HTTP server closed.');
+  const gracefulShutdown = async (signal: string) => {
+    logger.info(`Received ${signal}. Starting graceful shutdown...`);
+    
+    // Stop accepting new connections
+    server.close(async () => {
+      logger.info('HTTP server closed.');
+      
+      // Close database connections
+      await closeDatabaseConnection();
+      
+      logger.info('Graceful shutdown completed');
       process.exit(0);
     });
     
-    // Force close after 10 seconds
+    // Force close after 30 seconds
     setTimeout(() => {
-      log('Forcing shutdown...');
+      logger.error('Forcing shutdown after timeout');
       process.exit(1);
-    }, 10000);
+    }, 30000);
   };
 
+  // Handle different shutdown signals
   process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
   process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+  process.on('SIGHUP', () => gracefulShutdown('SIGHUP'));
+
+  // Handle uncaught exceptions and rejections
+  process.on('uncaughtException', (error) => {
+    logger.error('Uncaught Exception', { error: error.message, stack: error.stack });
+    gracefulShutdown('uncaughtException');
+  });
+
+  process.on('unhandledRejection', (reason, promise) => {
+    logger.error('Unhandled Rejection', { reason, promise });
+    gracefulShutdown('unhandledRejection');
+  });
 })();
