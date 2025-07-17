@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,12 +8,22 @@ import { Plus } from "lucide-react";
 import type { Resource } from "@shared/schema";
 
 export default function Resources() {
-  const [skillLevelFilter, setSkillLevelFilter] = useState<string>("");
-  const [categoryFilter, setCategoryFilter] = useState<string>("");
+  const [skillLevelFilter, setSkillLevelFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
 
   const { data: resources, isLoading } = useQuery<Resource[]>({
     queryKey: ["/api/resources", { category: categoryFilter, skillLevel: skillLevelFilter }],
   });
+
+  const filteredResources = useMemo(() => {
+    if (!resources) return [];
+
+    return resources.filter(resource => {
+      const matchesCategory = categoryFilter === "all" || resource.category === categoryFilter;
+      const matchesSkillLevel = skillLevelFilter === "all" || resource.skillLevel === skillLevelFilter;
+      return matchesCategory && matchesSkillLevel;
+    });
+  }, [resources, categoryFilter, skillLevelFilter]);
 
   if (isLoading) {
     return (
@@ -43,19 +53,19 @@ export default function Resources() {
                     <SelectValue placeholder="All Skill Levels" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Skill Levels</SelectItem>
+                    <SelectItem value="all">All Skill Levels</SelectItem>
                     <SelectItem value="beginner">Beginner</SelectItem>
                     <SelectItem value="intermediate">Intermediate</SelectItem>
                     <SelectItem value="advanced">Advanced</SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Categories</SelectItem>
+                    <SelectItem value="all">All Categories</SelectItem>
                     <SelectItem value="workflows">Workflows</SelectItem>
                     <SelectItem value="security">Security</SelectItem>
                     <SelectItem value="automation">Automation</SelectItem>
@@ -67,11 +77,11 @@ export default function Resources() {
           </CardHeader>
           <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {resources?.map((resource) => (
+              {filteredResources?.map((resource) => (
                 <ResourceCard key={resource.id} resource={resource} />
               ))}
             </div>
-            
+
             <div className="mt-8 text-center">
               <Button variant="outline" className="border-github-muted text-github-dark hover:bg-gray-50">
                 <Plus className="mr-2 h-4 w-4" />
