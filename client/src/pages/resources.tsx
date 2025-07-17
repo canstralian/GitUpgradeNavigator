@@ -20,7 +20,7 @@ export default function Resources() {
 
     return resources.filter(resource => {
       const matchesCategory = categoryFilter === "all" || resource.category === categoryFilter;
-      const matchesSkillLevel = skillLevelFilter === "all" || resource.skillLevel === skillLevelLevel;
+      const matchesSkillLevel = skillLevelFilter === "all" || resource.skillLevel === skillLevelFilter;
       return matchesCategory && matchesSkillLevel;
     });
   }, [resources, categoryFilter, skillLevelFilter]);

@@ -33,26 +33,33 @@
 }
 
 .dark {
-  --background: hsl(240, 10%, 3.9%);
-  --foreground: hsl(0, 0%, 98%);
-  --muted: hsl(240, 3.7%, 15.9%);
-  --muted-foreground: hsl(240, 5%, 64.9%);
-  --popover: hsl(240, 10%, 3.9%);
-  --popover-foreground: hsl(0, 0%, 98%);
-  --card: hsl(240, 10%, 3.9%);
-  --card-foreground: hsl(0, 0%, 98%);
-  --border: hsl(240, 3.7%, 15.9%);
-  --input: hsl(240, 3.7%, 15.9%);
+  --background: hsl(220, 13%, 9%);
+  --foreground: hsl(210, 40%, 98%);
+  --muted: hsl(215, 28%, 17%);
+  --muted-foreground: hsl(218, 11%, 65%);
+  --popover: hsl(220, 13%, 9%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --card: hsl(220, 13%, 9%);
+  --card-foreground: hsl(210, 40%, 98%);
+  --border: hsl(215, 28%, 17%);
+  --input: hsl(215, 28%, 17%);
   --primary: hsl(207, 90%, 54%);
   --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(240, 3.7%, 15.9%);
-  --secondary-foreground: hsl(0, 0%, 98%);
-  --accent: hsl(240, 3.7%, 15.9%);
-  --accent-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(215, 28%, 17%);
+  --secondary-foreground: hsl(210, 40%, 98%);
+  --accent: hsl(215, 28%, 17%);
+  --accent-foreground: hsl(210, 40%, 98%);
   --destructive: hsl(0, 62.8%, 30.6%);
-  --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(240, 4.9%, 83.9%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --ring: hsl(212, 12%, 84%);
   --radius: 0.5rem;
+
+  /* GitHub-specific dark colors */
+  --github-dark: hsl(210, 12%, 16%);
+  --github-blue: hsl(207, 90%, 54%);
+  --github-green: hsl(118, 77%, 43%);
+  --github-bg: hsl(220, 13%, 9%);
+  --github-muted: hsl(215, 28%, 17%);
 }
 
 @layer base {
