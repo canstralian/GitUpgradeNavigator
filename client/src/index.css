@@ -4,62 +4,86 @@
 
 :root {
   --background: hsl(0, 0%, 100%);
-  --foreground: hsl(20, 14.3%, 4.1%);
-  --muted: hsl(60, 4.8%, 95.9%);
-  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --foreground: hsl(216, 20%, 16%);
+  --muted: hsl(210, 17%, 97%);
+  --muted-foreground: hsl(206, 24%, 57%);
   --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --popover-foreground: hsl(216, 20%, 16%);
   --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(20, 14.3%, 4.1%);
-  --border: hsl(20, 5.9%, 90%);
-  --input: hsl(20, 5.9%, 90%);
+  --card-foreground: hsl(216, 20%, 16%);
+  --border: hsl(213, 27%, 92%);
+  --input: hsl(213, 27%, 92%);
   --primary: hsl(207, 90%, 54%);
-  --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(60, 4.8%, 95.9%);
-  --secondary-foreground: hsl(24, 9.8%, 10%);
-  --accent: hsl(60, 4.8%, 95.9%);
-  --accent-foreground: hsl(24, 9.8%, 10%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(210, 17%, 97%);
+  --secondary-foreground: hsl(216, 20%, 16%);
+  --accent: hsl(213, 27%, 92%);
+  --accent-foreground: hsl(216, 20%, 16%);
   --destructive: hsl(0, 84.2%, 60.2%);
-  --destructive-foreground: hsl(60, 9.1%, 97.8%);
-  --ring: hsl(20, 14.3%, 4.1%);
-  --radius: 0.5rem;
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --ring: hsl(207, 90%, 54%);
+  --radius: 0.75rem;
 
-  /* GitHub-specific colors */
+  /* Enhanced GitHub-specific colors */
   --github-dark: hsl(216, 20%, 16%);
   --github-blue: hsl(207, 90%, 54%);
+  --github-blue-light: hsl(207, 90%, 94%);
   --github-green: hsl(118, 77%, 43%);
+  --github-green-light: hsl(118, 77%, 94%);
+  --github-purple: hsl(250, 84%, 54%);
+  --github-purple-light: hsl(250, 84%, 94%);
+  --github-orange: hsl(36, 100%, 54%);
+  --github-orange-light: hsl(36, 100%, 94%);
   --github-bg: hsl(210, 17%, 97%);
   --github-muted: hsl(206, 24%, 57%);
+  --github-surface: hsl(213, 27%, 96%);
+  
+  /* Gradient variables */
+  --gradient-primary: linear-gradient(135deg, hsl(207, 90%, 54%) 0%, hsl(250, 84%, 54%) 100%);
+  --gradient-secondary: linear-gradient(135deg, hsl(118, 77%, 43%) 0%, hsl(36, 100%, 54%) 100%);
+  --gradient-subtle: linear-gradient(135deg, hsl(213, 27%, 98%) 0%, hsl(210, 17%, 97%) 100%);
 }
 
 .dark {
-  --background: hsl(220, 13%, 9%);
-  --foreground: hsl(210, 40%, 98%);
-  --muted: hsl(215, 28%, 17%);
-  --muted-foreground: hsl(218, 11%, 65%);
-  --popover: hsl(220, 13%, 9%);
-  --popover-foreground: hsl(210, 40%, 98%);
-  --card: hsl(220, 13%, 9%);
-  --card-foreground: hsl(210, 40%, 98%);
-  --border: hsl(215, 28%, 17%);
-  --input: hsl(215, 28%, 17%);
+  --background: hsl(216, 28%, 7%);
+  --foreground: hsl(213, 31%, 91%);
+  --muted: hsl(215, 25%, 12%);
+  --muted-foreground: hsl(217, 10%, 64%);
+  --popover: hsl(216, 28%, 7%);
+  --popover-foreground: hsl(213, 31%, 91%);
+  --card: hsl(215, 25%, 10%);
+  --card-foreground: hsl(213, 31%, 91%);
+  --border: hsl(215, 25%, 16%);
+  --input: hsl(215, 25%, 16%);
   --primary: hsl(207, 90%, 54%);
-  --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(215, 28%, 17%);
-  --secondary-foreground: hsl(210, 40%, 98%);
-  --accent: hsl(215, 28%, 17%);
-  --accent-foreground: hsl(210, 40%, 98%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(215, 25%, 12%);
+  --secondary-foreground: hsl(213, 31%, 91%);
+  --accent: hsl(215, 25%, 16%);
+  --accent-foreground: hsl(213, 31%, 91%);
   --destructive: hsl(0, 62.8%, 30.6%);
-  --destructive-foreground: hsl(210, 40%, 98%);
-  --ring: hsl(212, 12%, 84%);
-  --radius: 0.5rem;
+  --destructive-foreground: hsl(213, 31%, 91%);
+  --ring: hsl(207, 90%, 54%);
+  --radius: 0.75rem;
 
-  /* GitHub-specific dark colors */
-  --github-dark: hsl(210, 12%, 16%);
+  /* Enhanced GitHub-specific dark colors */
+  --github-dark: hsl(215, 25%, 10%);
   --github-blue: hsl(207, 90%, 54%);
+  --github-blue-light: hsl(207, 90%, 10%);
   --github-green: hsl(118, 77%, 43%);
-  --github-bg: hsl(220, 13%, 9%);
-  --github-muted: hsl(215, 28%, 17%);
+  --github-green-light: hsl(118, 77%, 10%);
+  --github-purple: hsl(250, 84%, 54%);
+  --github-purple-light: hsl(250, 84%, 10%);
+  --github-orange: hsl(36, 100%, 54%);
+  --github-orange-light: hsl(36, 100%, 10%);
+  --github-bg: hsl(216, 28%, 7%);
+  --github-muted: hsl(215, 25%, 16%);
+  --github-surface: hsl(215, 25%, 12%);
+  
+  /* Dark gradient variables */
+  --gradient-primary: linear-gradient(135deg, hsl(207, 90%, 54%) 0%, hsl(250, 84%, 54%) 100%);
+  --gradient-secondary: linear-gradient(135deg, hsl(118, 77%, 43%) 0%, hsl(36, 100%, 54%) 100%);
+  --gradient-subtle: linear-gradient(135deg, hsl(215, 25%, 12%) 0%, hsl(215, 25%, 10%) 100%);
 }
 
 @layer base {
@@ -70,14 +94,75 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
     font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    font-feature-settings: 'cv01', 'cv02', 'cv03', 'cv04';
   }
 
   .font-mono {
-    font-family: 'JetBrains Mono', 'Monaco', monospace;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', monospace;
+    font-feature-settings: 'liga', 'calt';
+  }
+  
+  /* Enhanced typography hierarchy */
+  h1 {
+    @apply text-4xl sm:text-5xl font-bold tracking-tight;
+    line-height: 1.2;
+  }
+  
+  h2 {
+    @apply text-3xl sm:text-4xl font-bold tracking-tight;
+    line-height: 1.3;
+  }
+  
+  h3 {
+    @apply text-2xl sm:text-3xl font-semibold tracking-tight;
+    line-height: 1.4;
+  }
+  
+  h4 {
+    @apply text-xl sm:text-2xl font-semibold tracking-tight;
+    line-height: 1.4;
+  }
+  
+  /* Improved scroll behavior */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Enhanced selection styles */
+  ::selection {
+    background-color: var(--github-blue);
+    color: white;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--muted);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--github-muted);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--github-blue);
+  }
+  
+  /* Focus visible for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
   }
 }
 
 @layer utilities {
+  /* Color utilities */
   .text-github-dark {
     color: var(--github-dark);
   }
@@ -90,10 +175,19 @@
     color: var(--github-green);
   }
   
+  .text-github-purple {
+    color: var(--github-purple);
+  }
+  
+  .text-github-orange {
+    color: var(--github-orange);
+  }
+  
   .text-github-muted {
     color: var(--github-muted);
   }
   
+  /* Background utilities */
   .bg-github-bg {
     background-color: var(--github-bg);
   }
@@ -102,14 +196,56 @@
     background-color: var(--github-blue);
   }
   
+  .bg-github-blue-light {
+    background-color: var(--github-blue-light);
+  }
+  
   .bg-github-green {
     background-color: var(--github-green);
+  }
+  
+  .bg-github-green-light {
+    background-color: var(--github-green-light);
+  }
+  
+  .bg-github-purple {
+    background-color: var(--github-purple);
+  }
+  
+  .bg-github-purple-light {
+    background-color: var(--github-purple-light);
+  }
+  
+  .bg-github-orange {
+    background-color: var(--github-orange);
+  }
+  
+  .bg-github-orange-light {
+    background-color: var(--github-orange-light);
   }
   
   .bg-github-dark {
     background-color: var(--github-dark);
   }
   
+  .bg-github-surface {
+    background-color: var(--github-surface);
+  }
+  
+  /* Gradient utilities */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .bg-gradient-secondary {
+    background: var(--gradient-secondary);
+  }
+  
+  .bg-gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+  
+  /* Border utilities */
   .border-github-blue {
     border-color: var(--github-blue);
   }
@@ -118,11 +254,79 @@
     border-color: var(--github-muted);
   }
   
+  /* Interactive utilities */
   .hover\:bg-github-blue:hover {
     background-color: var(--github-blue);
   }
   
   .hover\:text-github-dark:hover {
     color: var(--github-dark);
+  }
+  
+  .hover\:scale-102:hover {
+    transform: scale(1.02);
+  }
+  
+  .hover\:shadow-glow:hover {
+    box-shadow: 0 0 0 1px var(--github-blue), 0 0 20px -5px var(--github-blue);
+  }
+  
+  /* Glass morphism effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .dark .glass {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Enhanced card styling */
+  .card-enhanced {
+    @apply bg-card border border-border rounded-xl shadow-sm hover:shadow-md transition-all duration-300;
+  }
+  
+  .card-interactive {
+    @apply card-enhanced hover:scale-102 hover:shadow-glow cursor-pointer;
+  }
+  
+  /* Improved focus styles */
+  .focus-enhanced:focus {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+  
+  /* Animated gradient text */
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+  }
+  
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  
+  /* Pulse animation */
+  .pulse-glow {
+    animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 0 1px var(--github-blue);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.1);
+    }
   }
 }

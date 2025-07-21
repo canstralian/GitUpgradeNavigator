@@ -9,28 +9,35 @@ export default function Home() {
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Welcome Section */}
       <section className="mb-12">
-        <Card className="p-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-github-dark mb-4">
-              Git & GitHub Upgrade Planning Tool
-            </h2>
-            <p className="text-lg text-github-muted mb-8 max-w-3xl mx-auto">
-              Assess your current Git/GitHub setup and create comprehensive improvement roadmaps with 
-              step-by-step instructions, workflow recommendations, and team training plans.
-            </p>
-            <div className="flex justify-center space-x-4">
-              <Link href="/assessment">
-                <Button className="bg-github-blue hover:bg-blue-700 text-white">
-                  <FileText className="mr-2 h-4 w-4" />
-                  Start Assessment
-                </Button>
-              </Link>
-              <Link href="/resources">
-                <Button variant="outline" className="border-github-muted text-github-dark hover:bg-gray-50">
-                  <FileText className="mr-2 h-4 w-4" />
-                  View Resources
-                </Button>
-              </Link>
+        <Card className="card-enhanced bg-gradient-subtle border-none overflow-hidden">
+          <div className="relative p-12 text-center">
+            {/* Background decoration */}
+            <div className="absolute inset-0 bg-gradient-primary opacity-5 animate-pulse"></div>
+            <div className="absolute top-4 left-4 w-20 h-20 bg-github-blue opacity-10 rounded-full animate-bounce"></div>
+            <div className="absolute bottom-4 right-4 w-16 h-16 bg-github-green opacity-10 rounded-full animate-bounce delay-300"></div>
+            
+            <div className="relative z-10">
+              <h1 className="gradient-text mb-6">
+                Git & GitHub Upgrade Planning Tool
+              </h1>
+              <p className="text-xl text-github-muted mb-10 max-w-4xl mx-auto leading-relaxed">
+                Transform your development workflow with personalized assessments, visual workflow design, 
+                and comprehensive improvement roadmaps tailored to your team's needs.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
+                <Link href="/assessment" className="flex-1">
+                  <Button className="w-full bg-gradient-primary hover:opacity-90 text-white shadow-lg hover:shadow-xl transition-all duration-300 h-12">
+                    <FileText className="mr-2 h-5 w-5" />
+                    Start Assessment
+                  </Button>
+                </Link>
+                <Link href="/resources" className="flex-1">
+                  <Button variant="outline" className="w-full border-github-blue text-github-blue hover:bg-github-blue-light transition-all duration-300 h-12">
+                    <FileText className="mr-2 h-5 w-5" />
+                    View Resources
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </Card>
@@ -112,22 +119,33 @@ export default function Home() {
             </Link>
           </Card>
 
-          <Card className="p-6">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-github-green rounded-lg flex items-center justify-center">
-                <ServerCog className="h-5 w-5 text-white" />
+          <Card className="card-interactive group">
+            <div className="p-6">
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="relative">
+                  <div className="w-14 h-14 bg-github-green rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+                    <ServerCog className="h-7 w-7 text-white" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-github-orange rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <span className="text-white text-xs font-bold">2</span>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-github-dark mb-1">Workflow Designer</h3>
+                  <span className="text-xs font-medium text-github-blue bg-github-blue-light px-2 py-1 rounded-full">Interactive</span>
+                </div>
               </div>
-              <h3 className="font-semibold text-github-dark">Workflow Designer</h3>
+              <p className="text-github-muted mb-6 leading-relaxed">
+                Design and visualize your optimal Git workflow strategy with interactive diagrams 
+                and implementation guidelines.
+              </p>
+              <Link href="/workflow-designer">
+                <Button variant="outline" className="w-full border-github-green text-github-green hover:bg-github-green hover:text-white transition-all duration-300 h-11">
+                  <ServerCog className="mr-2 h-4 w-4" />
+                  Design Workflow
+                </Button>
+              </Link>
             </div>
-            <p className="text-github-muted text-sm mb-4">
-              Design and visualize your optimal Git workflow strategy with interactive diagrams 
-              and implementation guidelines.
-            </p>
-            <Link href="/workflow-designer">
-              <Button variant="outline" size="sm" className="w-full">
-                Design Workflow
-              </Button>
-            </Link>
           </Card>
 
           <Card className="p-6">
