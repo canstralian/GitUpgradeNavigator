@@ -42,13 +42,18 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  constructor() {
-    this.initializeDefaultData();
+  private initialized = false;
+
+  private async ensureInitialized() {
+    if (!this.initialized) {
+      await this.initializeDefaultData();
+      this.initialized = true;
+    }
   }
 
   private async initializeDefaultData() {
-    // Check if workflow templates already exist
-    const existingTemplates = await this.getAllWorkflowTemplates();
+    // Check if workflow templates already exist (direct db call to avoid recursion)
+    const existingTemplates = await db.select().from(workflowTemplates);
     if (existingTemplates.length === 0) {
       // Initialize workflow templates
       const defaultTemplates: Array<InsertWorkflowTemplate> = [
@@ -130,8 +135,8 @@ export class DatabaseStorage implements IStorage {
       }
     }
 
-    // Check if resources already exist
-    const existingResources = await this.getAllResources();
+    // Check if resources already exist (direct db call to avoid recursion)
+    const existingResources = await db.select().from(resources);
     if (existingResources.length === 0) {
       // Initialize default resources
       const defaultResources: Array<InsertResource> = [
@@ -217,6 +222,7 @@ export class DatabaseStorage implements IStorage {
 
   // Assessment methods
   async createAssessment(assessment: InsertAssessment): Promise<Assessment> {
+    await this.ensureInitialized();
     const [result] = await db
       .insert(assessments)
       .values(assessment)
@@ -225,6 +231,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAssessment(id: number): Promise<Assessment | undefined> {
+    await this.ensureInitialized();
     const [result] = await db
       .select()
       .from(assessments)
@@ -233,11 +240,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllAssessments(): Promise<Assessment[]> {
+    await this.ensureInitialized();
     return await db.select().from(assessments);
   }
 
   // Upgrade plan methods
   async createUpgradePlan(plan: InsertUpgradePlan): Promise<UpgradePlan> {
+    await this.ensureInitialized();
     const [result] = await db
       .insert(upgradePlans)
       .values(plan)
@@ -246,6 +255,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUpgradePlan(id: number): Promise<UpgradePlan | undefined> {
+    await this.ensureInitialized();
     const [result] = await db
       .select()
       .from(upgradePlans)
@@ -254,10 +264,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllUpgradePlans(): Promise<UpgradePlan[]> {
+    await this.ensureInitialized();
     return await db.select().from(upgradePlans);
   }
 
   async updateUpgradePlan(id: number, updates: Partial<UpgradePlan>): Promise<UpgradePlan> {
+    await this.ensureInitialized();
     const [result] = await db
       .update(upgradePlans)
       .set({ ...updates, updatedAt: new Date() })
@@ -273,6 +285,7 @@ export class DatabaseStorage implements IStorage {
 
   // Resource methods
   async createResource(resource: InsertResource): Promise<Resource> {
+    await this.ensureInitialized();
     const [result] = await db
       .insert(resources)
       .values(resource)
@@ -281,6 +294,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getResource(id: number): Promise<Resource | undefined> {
+    await this.ensureInitialized();
     const [result] = await db
       .select()
       .from(resources)
@@ -289,10 +303,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllResources(): Promise<Resource[]> {
+    await this.ensureInitialized();
     return await db.select().from(resources);
   }
 
   async getResourcesByCategory(category: string): Promise<Resource[]> {
+    await this.ensureInitialized();
     return await db
       .select()
       .from(resources)
@@ -300,6 +316,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getResourcesBySkillLevel(skillLevel: string): Promise<Resource[]> {
+    await this.ensureInitialized();
     return await db
       .select()
       .from(resources)
@@ -308,6 +325,7 @@ export class DatabaseStorage implements IStorage {
 
   // Workflow template methods
   async createWorkflowTemplate(template: InsertWorkflowTemplate): Promise<WorkflowTemplate> {
+    await this.ensureInitialized();
     const [result] = await db
       .insert(workflowTemplates)
       .values(template)
@@ -316,6 +334,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getWorkflowTemplate(id: number): Promise<WorkflowTemplate | undefined> {
+    await this.ensureInitialized();
     const [result] = await db
       .select()
       .from(workflowTemplates)
@@ -324,10 +343,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllWorkflowTemplates(): Promise<WorkflowTemplate[]> {
+    await this.ensureInitialized();
     return await db.select().from(workflowTemplates);
   }
 
   async getWorkflowTemplatesByType(type: string): Promise<WorkflowTemplate[]> {
+    await this.ensureInitialized();
     return await db
       .select()
       .from(workflowTemplates)

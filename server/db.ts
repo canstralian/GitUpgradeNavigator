@@ -1,13 +1,18 @@
 import { drizzle } from "drizzle-orm/neon-serverless";
-import { neon, Pool } from "@neondatabase/serverless";
-import * as schema from "@shared/schema";
+import { Pool, neon } from "@neondatabase/serverless";
 import { logger } from "./utils/logger";
+import ws from "ws";
 
 if (!process.env.DATABASE_URL) {
   throw new Error("DATABASE_URL must be set");
 }
 
-// Connection pool configuration
+// Configure WebSocket for Neon serverless in Node.js environment
+if (typeof global !== 'undefined') {
+  global.WebSocket = ws;
+}
+
+// Create connection pool for drizzle operations
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   max: 20,
@@ -15,6 +20,7 @@ const pool = new Pool({
   connectionTimeoutMillis: 2000,
 });
 
+// Create neon client for health checks
 const sql = neon(process.env.DATABASE_URL);
 
 // Database health check
@@ -38,4 +44,5 @@ export async function closeDatabaseConnection(): Promise<void> {
   }
 }
 
-export const db = drizzle(sql, { schema });
+// Create drizzle instance with the pool
+export const db = drizzle(pool);

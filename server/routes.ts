@@ -210,6 +210,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 function generatePlanSteps(assessment: any, template: any) {
   const steps = [];
+  let stepId = 1;
   const generateStepId = () => Math.random().toString(36).substr(2, 9);
 
   // Phase 1: Repository Configuration & Security

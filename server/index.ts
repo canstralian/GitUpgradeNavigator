@@ -67,7 +67,8 @@ class RateLimiter {
     
     // Cleanup old entries periodically
     if (Math.random() < 0.01) {
-      for (const [key, value] of this.requests.entries()) {
+      const entries = Array.from(this.requests.entries());
+      for (const [key, value] of entries) {
         if (now > value.resetTime + this.windowMs) {
           this.requests.delete(key);
         }
