@@ -84,3 +84,28 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run test"
+
+[[workflows.workflow]]
+name = "Build Release"
+author = 25868489
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm ci"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run check"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run test:ci"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run build"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"✅ Release build completed successfully!\""
